@@ -49,7 +49,7 @@ trim/
 ### 1. 构建 Docker 镜像
 
 ```bash
-docker build -t trim-app .
+docker build -t trim .
 ```
 
 ### 2. 运行 Docker 容器
@@ -60,7 +60,7 @@ docker run -d -p 8001:8001 --name trim trim:1.0
 
 ### 3. 访问应用
 
-打开浏览器，访问 http://localhost:8001
+打开浏览器，访问 <http://localhost:8001>
 
 ## 本地开发
 
@@ -72,20 +72,20 @@ docker run -d -p 8001:8001 --name trim trim:1.0
 cd backend
 ```
 
-2. 安装依赖
+1. 安装依赖
 
 ```bash
 pip install -r requirements.txt
 ```
 
-3. 初始化数据库
+1. 初始化数据库
 
 ```bash
 python init_db.py
 python init_food_data.py
 ```
 
-4. 启动后端服务
+1. 启动后端服务
 
 ```bash
 python main.py
@@ -99,42 +99,46 @@ python main.py
 cd frontend
 ```
 
-2. 安装依赖
+1. 安装依赖
 
 ```bash
 npm install
 ```
 
-3. 启动前端开发服务器
+1. 启动前端开发服务器
 
 ```bash
 npm run serve
 ```
 
-4. 访问前端页面
+1. 访问前端页面
 
-打开浏览器，访问 http://localhost:8080
+打开浏览器，访问 <http://localhost:8080>
 
 ## API 文档
 
 后端提供了以下 API 接口：
 
 ### 数据概览
+
 - `GET /api/dashboard` - 获取首页统计数据
 - `GET /api/dashboard/weight_trend` - 获取体重趋势数据
 
 ### 体重记录
+
 - `GET /api/weight_record` - 获取体重记录列表
 - `POST /api/weight_record` - 新增体重记录
 - `DELETE /api/weight_record/{id}` - 删除体重记录
 
 ### 饮食记录
+
 - `GET /api/food` - 获取食物列表
 - `GET /api/food_record` - 获取饮食记录
 - `POST /api/food_record` - 新增饮食记录
 - `DELETE /api/food_record/{id}` - 删除饮食记录
 
 ### 运动记录
+
 - `GET /api/exercise_record` - 获取运动记录
 - `POST /api/exercise_record` - 新增运动记录
 - `DELETE /api/exercise_record/{id}` - 删除运动记录
