@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Query, Path, Body
 from pydantic import BaseModel
+from typing import Optional
 from utils.response import set_result
 from service.food_service import FoodService, FoodRecordService
 from utils.logger import get_logger
@@ -13,8 +14,8 @@ logger = get_logger("food_api")
 class FoodRecordCreate(BaseModel):
     """饮食记录创建模型"""
     date: str
-    food_id: int
-    weight: float
+    food_id: Optional[int] = None
+    food_name: Optional[str] = None
 
 
 @router.get("/food", summary="获取食物列表")
@@ -46,9 +47,9 @@ async def get_food_record(date: str = Query(..., description="查询日期")):
 @router.post("/food_record", summary="新增饮食记录")
 async def add_food_record(record: FoodRecordCreate = Body(...)):
     """新增饮食记录"""
-    logger.info(f"开始新增饮食记录: 日期={record.date}, 食物ID={record.food_id}, 重量={record.weight}")
+    logger.info(f"开始新增饮食记录: 日期={record.date}, 食物ID={record.food_id}, 食物名称={record.food_name}")
     try:
-        success = food_record_service.add_food_record(record.date, record.food_id, record.weight)
+        success = food_record_service.add_food_record(record.date, record.food_id, record.food_name)
         if success:
             logger.info("新增饮食记录成功")
             return set_result(message="饮食记录添加成功")

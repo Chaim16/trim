@@ -2,7 +2,7 @@
   <div class="food-view">
     <div class="page-header">
       <h1>饮食记录管理</h1>
-      <p class="page-subtitle">记录你的饮食摄入，控制热量平衡</p>
+      <p class="page-subtitle">记录你的饮食摄入</p>
     </div>
 
     <!-- 添加饮食记录 -->
@@ -33,19 +33,20 @@
             >
               <option value="">请选择食物</option>
               <option v-for="food in foods" :key="food.id" :value="food.id">
-                {{ food.name }} ({{ food.calorie_per_100g }} kcal/100g)
+                {{ food.name }}
               </option>
+              <option value="other">其他</option>
             </select>
           </div>
-          <div class="form-item">
-            <label for="weight">重量 (g)</label>
+          <div v-if="newFoodRecord.food_id === 'other'" class="form-item">
+            <label for="other_food">输入食物名称</label>
             <input
-              type="number"
-              id="weight"
-              v-model.number="newFoodRecord.weight"
-              step="1"
+              type="text"
+              id="other_food"
+              v-model="newFoodRecord.other_food"
               required
               class="form-input"
+              placeholder="请输入食物名称"
             />
           </div>
           <div class="form-item form-submit">
@@ -76,8 +77,6 @@
           <thead>
             <tr>
               <th>食物名称</th>
-              <th>重量 (g)</th>
-              <th>热量 (kcal)</th>
               <th>操作</th>
             </tr>
           </thead>
@@ -88,8 +87,6 @@
               class="table-row"
             >
               <td>{{ record.food_name }}</td>
-              <td>{{ record.weight }}</td>
-              <td>{{ record.calorie }}</td>
               <td>
                 <button
                   class="btn btn-danger"
@@ -100,7 +97,7 @@
               </td>
             </tr>
             <tr v-if="foodRecords.length === 0">
-              <td colspan="4" class="empty">
+              <td colspan="2" class="empty">
                 <div class="empty-state">
                   <span class="empty-icon">🍎</span>
                   <p>暂无饮食记录</p>
@@ -109,13 +106,6 @@
               </td>
             </tr>
           </tbody>
-          <tfoot>
-            <tr>
-              <td colspan="2" class="total-label">总计</td>
-              <td class="total-value">{{ totalCalorie }} kcal</td>
-              <td></td>
-            </tr>
-          </tfoot>
         </table>
       </div>
     </div>
@@ -124,20 +114,18 @@
     <div class="food-list">
       <div class="list-header">
         <h2>食物列表</h2>
-        <p class="list-subtitle">常见食物热量参考</p>
+        <p class="list-subtitle">常见食物参考</p>
       </div>
       <div class="table-container">
         <table class="table">
           <thead>
             <tr>
               <th>食物名称</th>
-              <th>热量 (kcal/100g)</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="food in foods" :key="food.id" class="table-row">
               <td>{{ food.name }}</td>
-              <td>{{ food.calorie_per_100g }}</td>
             </tr>
           </tbody>
         </table>
@@ -147,7 +135,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted, computed } from "vue";
+import { defineComponent, ref, onMounted } from "vue";
 import api from "@/api/api";
 
 export default defineComponent({
@@ -159,12 +147,7 @@ export default defineComponent({
     const newFoodRecord = ref({
       date: new Date().toISOString().split("T")[0],
       food_id: "",
-      weight: 0,
-    });
-
-    // 计算总热量
-    const totalCalorie = computed(() => {
-      return foodRecords.value.reduce((sum, record) => sum + record.calorie, 0);
+      other_food: "",
     });
 
     // 获取食物列表
@@ -194,15 +177,19 @@ export default defineComponent({
     // 添加饮食记录
     const addFoodRecord = async () => {
       try {
-        const res = await api.addFoodRecord(newFoodRecord.value);
+        const isOther = newFoodRecord.value.food_id === "other";
+        const data = {
+          date: newFoodRecord.value.date,
+          food_id: isOther ? null : parseInt(newFoodRecord.value.food_id),
+          food_name: isOther ? newFoodRecord.value.other_food : null,
+        };
+        const res = await api.addFoodRecord(data);
         if (res.code === 0) {
-          // 重置表单
           newFoodRecord.value = {
             date: new Date().toISOString().split("T")[0],
             food_id: "",
-            weight: 0,
+            other_food: "",
           };
-          // 重新获取记录列表
           getFoodRecords();
         }
       } catch (error) {
@@ -215,7 +202,6 @@ export default defineComponent({
       try {
         const res = await api.deleteFoodRecord(id);
         if (res.code === 0) {
-          // 重新获取记录列表
           getFoodRecords();
         }
       } catch (error) {
@@ -233,7 +219,6 @@ export default defineComponent({
       foodRecords,
       selectedDate,
       newFoodRecord,
-      totalCalorie,
       getFoodRecords,
       addFoodRecord,
       deleteFoodRecord,

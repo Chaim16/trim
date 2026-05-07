@@ -41,9 +41,8 @@ class FoodRecord(BaseModel):
     __tablename__ = "food_record"
 
     date = Column(Date(), nullable=False, comment="日期")
-    food_id = Column(Integer(), nullable=False, comment="食物ID")
-    weight = Column(Numeric(6, 2), nullable=False, comment="食物重量")
-    calorie = Column(Numeric(6, 2), nullable=False, comment="热量")
+    food_id = Column(Integer(), nullable=True, comment="食物ID")
+    food_name = Column(String(64), nullable=True, comment="食物名称")
 
 
 class ExerciseRecord(BaseModel):

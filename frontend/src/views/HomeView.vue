@@ -39,9 +39,7 @@ export default defineComponent({
     const dashboardData = ref({
       current_weight: 0,
       target_weight: 70,
-      today_food_calorie: 0,
       today_exercise_calorie: 0,
-      today_net_calorie: 0,
     });
 
     // 计算统计数据
@@ -57,19 +55,9 @@ export default defineComponent({
         value: `${dashboardData.value.target_weight} kg`,
       },
       {
-        icon: "🍽️",
-        title: "今日摄入热量",
-        value: `${dashboardData.value.today_food_calorie} kcal`,
-      },
-      {
         icon: "🏃‍♂️",
         title: "今日运动消耗",
         value: `${dashboardData.value.today_exercise_calorie} kcal`,
-      },
-      {
-        icon: "⚡",
-        title: "今日净热量",
-        value: `${dashboardData.value.today_net_calorie} kcal`,
       },
     ]);
 

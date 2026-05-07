@@ -51,14 +51,17 @@ class FoodRecordService:
                 
                 data = []
                 for record in records:
-                    food = food_repo.get_by_id(record.food_id)
-                    food_name = food.name if food else "未知食物"
+                    if record.food_name:
+                        food_name = record.food_name
+                    elif record.food_id:
+                        food = food_repo.get_by_id(record.food_id)
+                        food_name = food.name if food else "未知食物"
+                    else:
+                        food_name = "未知食物"
                     
                     data.append({
                         "id": record.id,
                         "food_name": food_name,
-                        "weight": float(record.weight),
-                        "calorie": float(record.calorie)
                     })
                 
                 self.logger.info(f"获取饮食记录成功，共 {len(data)} 条记录")
@@ -67,34 +70,29 @@ class FoodRecordService:
             self.logger.error(f"获取饮食记录失败: 日期={date_str}, 错误={e}")
             raise
     
-    def add_food_record(self, date_str: str, food_id: int, weight: float):
+    def add_food_record(self, date_str: str, food_id: int = None, food_name: str = None):
         """新增饮食记录"""
-        self.logger.info(f"开始新增饮食记录: 日期={date_str}, 食物ID={food_id}, 重量={weight}")
+        self.logger.info(f"开始新增饮食记录: 日期={date_str}, 食物ID={food_id}, 食物名称={food_name}")
         try:
             with get_db_session() as db:
                 food_repo = FoodRepository(db)
                 record_repo = FoodRecordRepository(db)
                 
-                # 查找食物
-                food = food_repo.get_by_id(food_id)
-                if not food:
-                    self.logger.warning(f"食物不存在: ID={food_id}")
-                    return False
+                if food_id:
+                    food = food_repo.get_by_id(food_id)
+                    if not food:
+                        self.logger.warning(f"食物不存在: ID={food_id}")
+                        return False
                 
-                # 计算热量
-                calorie = (weight / 100) * float(food.calorie_per_100g)
-                
-                # 创建新的饮食记录
                 record_date = date.fromisoformat(date_str)
                 new_record = FoodRecord(
                     date=record_date,
                     food_id=food_id,
-                    weight=weight,
-                    calorie=calorie
+                    food_name=food_name
                 )
                 
                 record_repo.create(new_record)
-                self.logger.info(f"新增饮食记录成功: 食物={food.name}, 热量={calorie}kcal")
+                self.logger.info(f"新增饮食记录成功")
                 return True
         except Exception as e:
             self.logger.error(f"新增饮食记录失败: {e}")
