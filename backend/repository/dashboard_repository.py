@@ -16,10 +16,8 @@ class DashboardRepository(BaseRepository):
         return latest_weight.weight if latest_weight else 0
     
     def get_today_food_calorie(self):
-        """获取今日饮食热量"""
-        today = date.today()
-        today_food_calories = self.db.query(FoodRecord).filter(FoodRecord.date == today).all()
-        return sum(float(record.calorie) for record in today_food_calories)
+        """获取今日饮食热量（已移除）"""
+        return 0
     
     def get_today_exercise_calorie(self):
         """获取今日运动消耗"""

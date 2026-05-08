@@ -17,9 +17,7 @@ class DashboardService:
             with get_db_session() as db:
                 repo = DashboardRepository(db)
                 current_weight = repo.get_current_weight()
-                today_food_calorie = repo.get_today_food_calorie()
                 today_exercise_calorie = repo.get_today_exercise_calorie()
-                today_net_calorie = today_food_calorie - today_exercise_calorie
                 
                 # 从配置文件中读取目标体重
                 config = read_yaml_config()
@@ -28,9 +26,7 @@ class DashboardService:
                 data = {
                     "current_weight": float(current_weight),
                     "target_weight": target_weight,
-                    "today_food_calorie": today_food_calorie,
                     "today_exercise_calorie": today_exercise_calorie,
-                    "today_net_calorie": today_net_calorie
                 }
                 self.logger.info(f"获取首页统计数据成功: {data}")
                 return data
